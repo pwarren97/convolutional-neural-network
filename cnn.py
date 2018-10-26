@@ -1,27 +1,46 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[3]:
 
 
+from __future__ import print_function
 import tensorflow as tf
+from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense
+
+
+# In[13]:
+
+
+# Data setup
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Reshape into 4D tensor with tensorflow reshape function
+x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
+x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)
+
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+
+x_train /= 255
+x_test /= 255
 
 
 # In[ ]:
 
 
-# Conv2D(filters, kernel_size, strides=(1,1), padding='valid', data_format=None, dilation_rate=(1,1), activation=None, use_bias=True, kernel_intitializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_contraint=None, bias_contraint=None),
-# MaxPooling2D(poolsize=(2, 2), strides=2, padding='valid', data_format=None),
-# Dense(units, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
-
 model = Sequential()
+
+
+# In[4]:
+
+
+# Add layers
 model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
                  activation='relu',
                  input_shape=input_shape))
-model.add(MaxPooling2D())
-model.add(Dense(number, 'relu'))
 
 
 # In[ ]:
