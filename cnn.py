@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# # Basic Convolutional Neural Network
+# ***Honors Project by Peyton Warren***
+# 
+# This neural net uses the MNIST dataset with the listed layers:
+# 1. Convolutional layer
+# 2. Max Pooling layer
+# 3. Fully Connected layer
+
+# In[ ]:
 
 
 from __future__ import print_function
@@ -10,16 +18,19 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense
 
+import matplotlib.pylab as plt
 
-# In[13]:
+
+# In[10]:
 
 
 # Data setup
+# Download mnist dataset
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 # Reshape into 4D tensor with tensorflow reshape function
-x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
-x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)
+# x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
+# x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
@@ -27,27 +38,39 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
+print(x_train.shape)
 
-# In[ ]:
+
+# In[11]:
 
 
 model = Sequential()
 
 
-# In[4]:
+# In[14]:
 
 
 # Add layers
 model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
                  activation='relu',
-                 input_shape=input_shape))
+                 input_shape=(x_train.shape)))
+
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+
+model.add(Dense(32, activation='relu'))
 
 
-# In[ ]:
+# In[15]:
 
 
 # Compile follows setting up the neural network
 model.compile(optimizer='rmsprop',
              loss='categorical_crossentropy',
              metrics=['accuracy'])
+
+
+# In[ ]:
+
+
+
 
