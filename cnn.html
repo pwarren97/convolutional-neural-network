@@ -13129,14 +13129,15 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">keras.datasets</span> <span class="kn">import</span> <span class="n">mnist</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">SGD</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
 </pre></div>
@@ -13148,23 +13149,32 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Data setup</span>
 <span class="c1"># Download mnist dataset</span>
 <span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 
-<span class="c1"># Reshape into 4D tensor with tensorflow reshape function</span>
-<span class="c1"># x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)</span>
-<span class="c1"># x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)</span>
+<span class="c1"># creating the image dimension variables and the number of channels</span>
+<span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span>
 
+
+<span class="c1"># Reshape into 4D tensor with tensorflow reshape function</span>
+<span class="c1"># Putting it into the format &quot;channels_last&quot; data format (batch, cols, rows, channels)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+
+<span class="c1"># change data type to floating point numbers</span>
 <span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 <span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 
+<span class="c1"># Normalize the data, x_train &amp; x_test now between 0 and 1</span>
 <span class="n">x_train</span> <span class="o">/=</span> <span class="mi">255</span>
 <span class="n">x_test</span> <span class="o">/=</span> <span class="mi">255</span>
 
+<span class="c1"># print(type(x_train))    # x_train is a numpy.ndarray object</span>
 <span class="k">print</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 
@@ -13182,7 +13192,8 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(60000, 28, 28)
+<pre>(60000, 28, 28, 1)
+(60000,)
 </pre>
 </div>
 </div>
@@ -13193,7 +13204,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
@@ -13206,16 +13217,21 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Add layers</span>
-<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                 <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
-                 <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Adds layers</span>
 
+<span class="c1"># Convolutional Layer</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span>
+                 <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>   <span class="c1"># kernel_size (window) = (5, 5), strides = (1, 1)</span>
+                 <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+                 <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span><span class="p">,</span> <span class="n">channels</span><span class="p">)))</span>
+
+<span class="c1"># Max Pooling Layer</span>
 <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 
+<span class="c1"># Fully Connected Layer</span>
 <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
 </pre></div>
 
@@ -13226,16 +13242,98 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Compile follows setting up the neural network</span>
-<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;rmsprop&#39;</span><span class="p">,</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Optimizer: Stochastic Gradient Descent</span>
+<span class="n">sgd</span> <span class="o">=</span> <span class="n">SGD</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
+
+<span class="c1"># Compile follows setting up the neural network</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">sgd</span><span class="p">,</span>
              <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span>
              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Settings for training the model</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>    <span class="c1"># 128 items in the training data are being used</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>         <span class="c1"># performing 10 epochs</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>      <span class="c1"># inputing the training x and y</span>
+          <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+          <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+          <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>             <span class="c1"># verbose 1 means it has a progress bar for every epoch</span>
+          <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_text output_error">
+<pre>
+
+<span class="ansi-red-fg">ValueError</span>Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-53-543a71198e90&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span>           epochs<span class="ansi-blue-fg">=</span>epochs<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span>           verbose<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>             <span class="ansi-red-fg"># verbose 1 means it has a progress bar for every epoch</span>
+<span class="ansi-green-fg">----&gt; 5</span><span class="ansi-red-fg">           validation_data=(x_test, y_test))
+</span>
+<span class="ansi-green-fg">/usr/local/lib/python2.7/dist-packages/keras/engine/training.pyc</span> in <span class="ansi-cyan-fg">fit</span><span class="ansi-blue-fg">(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    948</span>             sample_weight<span class="ansi-blue-fg">=</span>sample_weight<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    949</span>             class_weight<span class="ansi-blue-fg">=</span>class_weight<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-fg">--&gt; 950</span><span class="ansi-red-fg">             batch_size=batch_size)
+</span><span class="ansi-green-intense-fg ansi-bold">    951</span>         <span class="ansi-red-fg"># Prepare validation data.</span>
+<span class="ansi-green-intense-fg ansi-bold">    952</span>         do_validation <span class="ansi-blue-fg">=</span> False
+
+<span class="ansi-green-fg">/usr/local/lib/python2.7/dist-packages/keras/engine/training.pyc</span> in <span class="ansi-cyan-fg">_standardize_user_data</span><span class="ansi-blue-fg">(self, x, y, sample_weight, class_weight, check_array_lengths, batch_size)</span>
+<span class="ansi-green-intense-fg ansi-bold">    785</span>                 feed_output_shapes<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    786</span>                 check_batch_axis<span class="ansi-blue-fg">=</span>False<span class="ansi-blue-fg">,</span>  <span class="ansi-red-fg"># Don&#39;t enforce the batch size.</span>
+<span class="ansi-green-fg">--&gt; 787</span><span class="ansi-red-fg">                 exception_prefix=&#39;target&#39;)
+</span><span class="ansi-green-intense-fg ansi-bold">    788</span> 
+<span class="ansi-green-intense-fg ansi-bold">    789</span>             <span class="ansi-red-fg"># Generate sample-wise weight values given the `sample_weight` and</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python2.7/dist-packages/keras/engine/training_utils.pyc</span> in <span class="ansi-cyan-fg">standardize_input_data</span><span class="ansi-blue-fg">(data, names, shapes, check_batch_axis, exception_prefix)</span>
+<span class="ansi-green-intense-fg ansi-bold">    125</span>                         <span class="ansi-blue-fg">&#39;: expected &#39;</span> <span class="ansi-blue-fg">+</span> names<span class="ansi-blue-fg">[</span>i<span class="ansi-blue-fg">]</span> <span class="ansi-blue-fg">+</span> <span class="ansi-blue-fg">&#39; to have &#39;</span> <span class="ansi-blue-fg">+</span>
+<span class="ansi-green-intense-fg ansi-bold">    126</span>                         str<span class="ansi-blue-fg">(</span>len<span class="ansi-blue-fg">(</span>shape<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">+</span> <span class="ansi-blue-fg">&#39; dimensions, but got array &#39;</span>
+<span class="ansi-green-fg">--&gt; 127</span><span class="ansi-red-fg">                         &#39;with shape &#39; + str(data_shape))
+</span><span class="ansi-green-intense-fg ansi-bold">    128</span>                 <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> check_batch_axis<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    129</span>                     data_shape <span class="ansi-blue-fg">=</span> data_shape<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">]</span>
+
+<span class="ansi-red-fg">ValueError</span>: Error when checking target: expected dense_4 to have 4 dimensions, but got array with shape (60000, 1)</pre>
+</div>
+</div>
+
 </div>
 </div>
 

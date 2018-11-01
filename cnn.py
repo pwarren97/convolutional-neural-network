@@ -9,64 +9,101 @@
 # 2. Max Pooling layer
 # 3. Fully Connected layer
 
-# In[ ]:
+# In[54]:
 
 
 from __future__ import print_function
 import tensorflow as tf
 from keras.datasets import mnist
-from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense
+from keras.models import Sequential
+from keras.optimizers import SGD
 
 import matplotlib.pylab as plt
 
 
-# In[10]:
+# In[55]:
 
 
 # Data setup
 # Download mnist dataset
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# Reshape into 4D tensor with tensorflow reshape function
-# x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 1)
-# x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], 1)
+# creating the image dimension variables and the number of channels
+img_x, img_y = x_train.shape[1], x_train.shape[2]
+channels = 1
 
+
+# Reshape into 4D tensor with tensorflow reshape function
+# Putting it into the format "channels_last" data format (batch, cols, rows, channels)
+x_train = x_train.reshape(x_train.shape[0], img_x, img_y, channels)
+x_test = x_test.reshape(x_test.shape[0], img_x, img_y, channels)
+
+# change data type to floating point numbers
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 
+# Normalize the data, x_train & x_test now between 0 and 1
 x_train /= 255
 x_test /= 255
 
+# print(type(x_train))    # x_train is a numpy.ndarray object
 print(x_train.shape)
 
 
-# In[11]:
+# In[49]:
 
 
 model = Sequential()
 
 
-# In[14]:
+# In[50]:
 
 
-# Add layers
-model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
+# Adds layers
+
+# Convolutional Layer
+model.add(Conv2D(32,
+                 (5, 1),   # kernel_size (window) = (5, 5), strides = (1, 1)
                  activation='relu',
-                 input_shape=(x_train.shape)))
+                 input_shape=(img_x, img_y, channels)))
 
+# Max Pooling Layer
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
+# Fully Connected Layer
 model.add(Dense(32, activation='relu'))
 
 
-# In[15]:
+# In[51]:
 
+
+# Optimizer: Stochastic Gradient Descent
+sgd = SGD(lr=0.0001)
 
 # Compile follows setting up the neural network
-model.compile(optimizer='rmsprop',
+model.compile(optimizer=sgd,
              loss='categorical_crossentropy',
              metrics=['accuracy'])
+
+
+# In[52]:
+
+
+# Settings for training the model
+batch_size = 128    # 128 items in the training data are being used
+num_classes = 10
+epochs = 10         # performing 10 epochs
+
+
+# In[53]:
+
+
+model.fit(x_train, y_train,      # inputing the training x and y
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,             # verbose 1 means it has a progress bar for every epoch
+          validation_data=(x_test, y_test))
 
 
 # In[ ]:
