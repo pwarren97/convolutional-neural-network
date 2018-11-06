@@ -9,20 +9,20 @@
 # 2. Max Pooling layer
 # 3. Fully Connected layer
 
-# In[54]:
+# In[63]:
 
 
 from __future__ import print_function
 import tensorflow as tf
 from keras.datasets import mnist
-from keras.layers import Conv2D, MaxPooling2D, Dense
+from keras.layers import Conv2D, MaxPooling2D, Dense, Reshape
 from keras.models import Sequential
 from keras.optimizers import SGD
 
 import matplotlib.pylab as plt
 
 
-# In[55]:
+# In[64]:
 
 
 # Data setup
@@ -33,6 +33,7 @@ import matplotlib.pylab as plt
 img_x, img_y = x_train.shape[1], x_train.shape[2]
 channels = 1
 
+plt.imshow(x_train[59999], cmap=plt.cm.binary)
 
 # Reshape into 4D tensor with tensorflow reshape function
 # Putting it into the format "channels_last" data format (batch, cols, rows, channels)
@@ -51,31 +52,40 @@ x_test /= 255
 print(x_train.shape)
 
 
-# In[49]:
+# In[65]:
+
+
+# Settings for training the model later on
+batch_size = 128    # 128 items in the training data are being used
+num_classes = 10    # Number of classifications
+epochs = 10         # performing 10 epochs
+
+
+# In[66]:
 
 
 model = Sequential()
 
 
-# In[50]:
+# In[67]:
 
 
 # Adds layers
 
 # Convolutional Layer
 model.add(Conv2D(32,
-                 (5, 1),   # kernel_size (window) = (5, 5), strides = (1, 1)
+                 kernel_size = (5, 5), strides = (1, 1), # (5, 1),
                  activation='relu',
                  input_shape=(img_x, img_y, channels)))
 
 # Max Pooling Layer
-model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 # Fully Connected Layer
-model.add(Dense(32, activation='relu'))
+model.add(Dense(num_classes))
 
 
-# In[51]:
+# In[68]:
 
 
 # Optimizer: Stochastic Gradient Descent
@@ -87,16 +97,7 @@ model.compile(optimizer=sgd,
              metrics=['accuracy'])
 
 
-# In[52]:
-
-
-# Settings for training the model
-batch_size = 128    # 128 items in the training data are being used
-num_classes = 10
-epochs = 10         # performing 10 epochs
-
-
-# In[53]:
+# In[69]:
 
 
 model.fit(x_train, y_train,      # inputing the training x and y

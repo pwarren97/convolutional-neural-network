@@ -13129,13 +13129,13 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">from</span> <span class="nn">keras.datasets</span> <span class="kn">import</span> <span class="n">mnist</span>
-<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Reshape</span>
 <span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">SGD</span>
 
@@ -13149,7 +13149,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Data setup</span>
@@ -13160,6 +13160,7 @@ div#notebook {
 <span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">channels</span> <span class="o">=</span> <span class="mi">1</span>
 
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x_train</span><span class="p">[</span><span class="mi">59999</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span>
 
 <span class="c1"># Reshape into 4D tensor with tensorflow reshape function</span>
 <span class="c1"># Putting it into the format &quot;channels_last&quot; data format (batch, cols, rows, channels)</span>
@@ -13193,9 +13194,23 @@ div#notebook {
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>(60000, 28, 28, 1)
-(60000,)
 </pre>
 </div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
 </div>
 
 </div>
@@ -13204,7 +13219,23 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[65]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Settings for training the model later on</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>    <span class="c1"># 128 items in the training data are being used</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>    <span class="c1"># Number of classifications</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>         <span class="c1"># performing 10 epochs</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[66]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
@@ -13217,22 +13248,22 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[67]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Adds layers</span>
 
 <span class="c1"># Convolutional Layer</span>
 <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span>
-                 <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>   <span class="c1"># kernel_size (window) = (5, 5), strides = (1, 1)</span>
+                 <span class="n">kernel_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="c1"># (5, 1),</span>
                  <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
                  <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">img_x</span><span class="p">,</span> <span class="n">img_y</span><span class="p">,</span> <span class="n">channels</span><span class="p">)))</span>
 
 <span class="c1"># Max Pooling Layer</span>
-<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 
 <span class="c1"># Fully Connected Layer</span>
-<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13242,7 +13273,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="prompt input_prompt">In&nbsp;[68]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Optimizer: Stochastic Gradient Descent</span>
@@ -13261,23 +13292,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Settings for training the model</span>
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>    <span class="c1"># 128 items in the training data are being used</span>
-<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>         <span class="c1"># performing 10 epochs</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[69]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>      <span class="c1"># inputing the training x and y</span>
@@ -13304,7 +13319,7 @@ div#notebook {
 <pre>
 
 <span class="ansi-red-fg">ValueError</span>Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-53-543a71198e90&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">&lt;ipython-input-69-543a71198e90&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
 <span class="ansi-green-intense-fg ansi-bold">      3</span>           epochs<span class="ansi-blue-fg">=</span>epochs<span class="ansi-blue-fg">,</span>
 <span class="ansi-green-intense-fg ansi-bold">      4</span>           verbose<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>             <span class="ansi-red-fg"># verbose 1 means it has a progress bar for every epoch</span>
 <span class="ansi-green-fg">----&gt; 5</span><span class="ansi-red-fg">           validation_data=(x_test, y_test))
@@ -13330,7 +13345,7 @@ div#notebook {
 </span><span class="ansi-green-intense-fg ansi-bold">    128</span>                 <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> check_batch_axis<span class="ansi-blue-fg">:</span>
 <span class="ansi-green-intense-fg ansi-bold">    129</span>                     data_shape <span class="ansi-blue-fg">=</span> data_shape<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">]</span>
 
-<span class="ansi-red-fg">ValueError</span>: Error when checking target: expected dense_4 to have 4 dimensions, but got array with shape (60000, 1)</pre>
+<span class="ansi-red-fg">ValueError</span>: Error when checking target: expected dense_14 to have 4 dimensions, but got array with shape (60000, 1)</pre>
 </div>
 </div>
 
