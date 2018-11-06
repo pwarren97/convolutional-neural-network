@@ -9,20 +9,22 @@
 # 2. Max Pooling layer
 # 3. Fully Connected layer
 
-# In[63]:
+# In[30]:
 
 
 from __future__ import print_function
 import tensorflow as tf
 from keras.datasets import mnist
-from keras.layers import Conv2D, MaxPooling2D, Dense, Reshape
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from keras.models import Sequential
 from keras.optimizers import SGD
+from keras.utils import to_categorical
+from keras.callbacks import Callback
 
 import matplotlib.pylab as plt
 
 
-# In[64]:
+# In[31]:
 
 
 # Data setup
@@ -48,44 +50,52 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
+# convert class vectors to binary class matrices - this is for use in the
+# categorical_crossentropy loss below
+y_train = to_categorical(y_train, num_classes)
+y_test = to_categorical(y_test, num_classes)
+
 # print(type(x_train))    # x_train is a numpy.ndarray object
 print(x_train.shape)
+print(y_train.shape)
 
 
-# In[65]:
+# In[32]:
 
 
 # Settings for training the model later on
 batch_size = 128    # 128 items in the training data are being used
 num_classes = 10    # Number of classifications
 epochs = 10         # performing 10 epochs
+input_shape = (img_x, img_y, channels)
 
 
-# In[66]:
+# In[33]:
 
 
 model = Sequential()
 
 
-# In[67]:
+# In[34]:
 
 
 # Adds layers
 
 # Convolutional Layer
-model.add(Conv2D(32,
-                 kernel_size = (5, 5), strides = (1, 1), # (5, 1),
+model.add(Conv2D(32, kernel_size = (5, 5), strides = (1, 1), # (5, 1),
                  activation='relu',
-                 input_shape=(img_x, img_y, channels)))
+                 input_shape=input_shape))
 
 # Max Pooling Layer
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+model.add(Flatten())
 
 # Fully Connected Layer
 model.add(Dense(num_classes))
 
 
-# In[68]:
+# In[35]:
 
 
 # Optimizer: Stochastic Gradient Descent
@@ -97,14 +107,50 @@ model.compile(optimizer=sgd,
              metrics=['accuracy'])
 
 
-# In[69]:
+# In[36]:
+
+
+class AccuracyHistory(Callback):
+    def on_train_begin(self, logs={}):
+        self.acc = []
+
+    def on_epoch_end(self, batch, logs={}):
+        self.acc.append(logs.get('acc'))
+
+history = AccuracyHistory()
+
+
+# In[37]:
 
 
 model.fit(x_train, y_train,      # inputing the training x and y
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,             # verbose 1 means it has a progress bar for every epoch
-          validation_data=(x_test, y_test))
+          validation_data=(x_test, y_test),
+          callbacks=[history])
+
+
+# In[38]:
+
+
+score = model.evaluate(x_test, y_test, verbose=0)
+
+
+# In[41]:
+
+
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+
+
+# In[42]:
+
+
+plt.plot(range(1, 11), history.acc)
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.show()
 
 
 # In[ ]:
