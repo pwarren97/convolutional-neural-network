@@ -9,7 +9,7 @@
 # 2. Max Pooling layer
 # 3. Fully Connected layer
 
-# In[30]:
+# In[5]:
 
 
 from __future__ import print_function
@@ -24,7 +24,17 @@ from keras.callbacks import Callback
 import matplotlib.pylab as plt
 
 
-# In[31]:
+# In[6]:
+
+
+# Settings for training the model later on
+batch_size = 128    # 128 items in the training data are being used
+num_classes = 10    # Number of classifications
+epochs = 10         # performing 10 epochs
+input_shape = (img_x, img_y, channels)
+
+
+# In[7]:
 
 
 # Data setup
@@ -60,23 +70,13 @@ print(x_train.shape)
 print(y_train.shape)
 
 
-# In[32]:
-
-
-# Settings for training the model later on
-batch_size = 128    # 128 items in the training data are being used
-num_classes = 10    # Number of classifications
-epochs = 10         # performing 10 epochs
-input_shape = (img_x, img_y, channels)
-
-
-# In[33]:
+# In[8]:
 
 
 model = Sequential()
 
 
-# In[34]:
+# In[9]:
 
 
 # Adds layers
@@ -95,7 +95,7 @@ model.add(Flatten())
 model.add(Dense(num_classes))
 
 
-# In[35]:
+# In[10]:
 
 
 # Optimizer: Stochastic Gradient Descent
@@ -107,7 +107,7 @@ model.compile(optimizer=sgd,
              metrics=['accuracy'])
 
 
-# In[36]:
+# In[11]:
 
 
 class AccuracyHistory(Callback):
@@ -120,7 +120,7 @@ class AccuracyHistory(Callback):
 history = AccuracyHistory()
 
 
-# In[37]:
+# In[12]:
 
 
 model.fit(x_train, y_train,      # inputing the training x and y
@@ -131,20 +131,21 @@ model.fit(x_train, y_train,      # inputing the training x and y
           callbacks=[history])
 
 
-# In[38]:
+# In[13]:
 
 
-score = model.evaluate(x_test, y_test, verbose=0)
+score = model.evaluate(x_test, y_test, verbose=1)
 
 
-# In[41]:
+# In[14]:
 
 
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+# print(model.metrics_namess)
 
 
-# In[42]:
+# In[15]:
 
 
 plt.plot(range(1, 11), history.acc)
