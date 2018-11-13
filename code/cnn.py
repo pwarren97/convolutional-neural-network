@@ -9,7 +9,7 @@
 # 2. Max Pooling layer
 # 3. Fully Connected layer
 
-# In[5]:
+# In[2]:
 
 
 from __future__ import print_function
@@ -24,17 +24,16 @@ from keras.callbacks import Callback
 import matplotlib.pylab as plt
 
 
-# In[6]:
+# In[4]:
 
 
 # Settings for training the model later on
 batch_size = 128    # 128 items in the training data are being used
 num_classes = 10    # Number of classifications
 epochs = 10         # performing 10 epochs
-input_shape = (img_x, img_y, channels)
 
 
-# In[7]:
+# In[ ]:
 
 
 # Data setup
@@ -44,6 +43,7 @@ input_shape = (img_x, img_y, channels)
 # creating the image dimension variables and the number of channels
 img_x, img_y = x_train.shape[1], x_train.shape[2]
 channels = 1
+input_shape = (img_x, img_y, channels)
 
 plt.imshow(x_train[59999], cmap=plt.cm.binary)
 
